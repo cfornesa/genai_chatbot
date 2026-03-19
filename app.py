@@ -26,14 +26,21 @@ def generate():
     if not user_message or not model:
         return jsonify({"error": "Missing message or model selection"}), 400
 
-    system_prompt = "You are an AI assistant helping with customer inquiries. Provide a helpful and concise response."
+    system_prompt = (
+        "You are an AI assistant helping with customer inquiries. "
+        "Analyze the customer message and provide: a summary of their message, "
+        "a sentiment score from 0 (negative) to 100 (positive), "
+        "a suggested response to the user, "
+        "a category (billing, technical, or general), "
+        "and a recommended action for the support representative."
+    )
 
     start_time = time.time()
 
     # Error handling to ensure model exists
     try:
         if model == 'llama':
-            result = llama_response(system_prompt, user_prompt)
+            result = llama_response(system_prompt, user_message)
         elif model == 'granite': 
             result = granite_response(system_prompt, user_message)
         elif model == 'mistral': 
@@ -45,9 +52,6 @@ def generate():
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 # Ensures Flask dev server runs when the file is executed
 if __name__ == '__main__':
